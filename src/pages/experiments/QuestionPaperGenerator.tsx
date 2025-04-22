@@ -223,7 +223,7 @@ The question paper should follow standard CBSE format and include quality questi
               <Button 
                 onClick={generateQuestionPaper} 
                 disabled={generating}
-                className="w-full gradient-blue"
+                className="w-full gradient-green"
               >
                 {generating ? 
                   <>

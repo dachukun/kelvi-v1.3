@@ -7,13 +7,13 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
 
-const bgColors = {
-  green: "#F2FCE2",
-  orange: "#FEC6A1",
-  yellow: "#FEF7CD",
-  "light-red": "#FFDEE2",
-  "light-blue": "#D3E4FD",
-};
+const bgColors = [
+  { value: "#F2FCE2", label: "Mint" },
+  { value: "#FFE8D6", label: "Peach" },
+  { value: "#E3F4F4", label: "Sky" },
+  { value: "#FFE5F1", label: "Pink" },
+  { value: "#FFF4E0", label: "Yellow" },
+];
 
 interface AvatarPickerProps {
   onSelect: (data: { avatarUrl: string; bgColor: string }) => void;
@@ -22,22 +22,22 @@ interface AvatarPickerProps {
 
 export function AvatarPicker({ onSelect, currentBgColor }: AvatarPickerProps) {
   const [selectedAvatar, setSelectedAvatar] = useState<string>("");
-  const [selectedColor, setSelectedColor] = useState<string>(currentBgColor || "green");
+  const [selectedColor, setSelectedColor] = useState<string>("0");
 
   const avatars = [
-    "/Kais/girl profile1.png",
-    "/Kais/girl profile2.png",
-    "/Kais/girl profile3.png",
-    "/Kais/boy profile1.png",
-    "/Kais/boy profile2.png",
-    "/Kais/boy profile3.png",
+    "/Kais/profile boy1.png",
+    "/Kais/profile boy2.png",
+    "/Kais/profile boy3.png",
+    "/Kais/profile girl1.png",
+    "/Kais/profile girl2.png",
+    "/Kais/profile girl3.png",
   ];
 
   const handleSave = () => {
     if (selectedAvatar) {
       onSelect({
         avatarUrl: selectedAvatar,
-        bgColor: bgColors[selectedColor as keyof typeof bgColors],
+        bgColor: bgColors[parseInt(selectedColor)].value,
       });
     }
   };
@@ -63,7 +63,7 @@ export function AvatarPicker({ onSelect, currentBgColor }: AvatarPickerProps) {
                 }`}
                 onClick={() => setSelectedAvatar(avatar)}
               >
-                <Avatar className="h-16 w-16" style={{ backgroundColor: bgColors[selectedColor as keyof typeof bgColors] }}>
+                <Avatar className="h-16 w-16" style={{ backgroundColor: bgColors[parseInt(selectedColor)].value }}>
                   <AvatarImage src={avatar} alt="Avatar" />
                 </Avatar>
               </div>
@@ -73,24 +73,24 @@ export function AvatarPicker({ onSelect, currentBgColor }: AvatarPickerProps) {
           <div className="space-y-4">
             <Label>Background Color</Label>
             <RadioGroup
-              defaultValue={selectedColor}
+              defaultValue="0"
               onValueChange={setSelectedColor}
               className="grid grid-cols-5 gap-2"
             >
-              {Object.entries(bgColors).map(([key, value]) => (
-                <div key={key} className="flex items-center space-x-2">
+              {bgColors.map((color, index) => (
+                <div key={index} className="flex items-center space-x-2">
                   <RadioGroupItem
-                    value={key}
-                    id={key}
+                    value={index.toString()}
+                    id={index.toString()}
                     className="peer sr-only"
                   />
                   <Label
-                    htmlFor={key}
+                    htmlFor={index.toString()}
                     className="flex flex-col items-center justify-between rounded-md border-2 border-muted p-2 hover:border-accent cursor-pointer peer-data-[state=checked]:border-kelvi-green"
                   >
                     <div
                       className="w-6 h-6 rounded-full"
-                      style={{ backgroundColor: value }}
+                      style={{ backgroundColor: color.value }}
                     />
                   </Label>
                 </div>

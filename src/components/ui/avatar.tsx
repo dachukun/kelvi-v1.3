@@ -5,12 +5,14 @@ import { cn } from "@/lib/utils"
 
 const Avatar = React.forwardRef<
   React.ElementRef<typeof AvatarPrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Root>
->(({ className, ...props }, ref) => (
+  React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Root> & {
+    profileType?: 'boy1' | 'boy2' | 'boy3' | 'girl1' | 'girl2' | 'girl3'
+  }
+>(({ className, profileType, ...props }, ref) => (
   <AvatarPrimitive.Root
     ref={ref}
     className={cn(
-      "relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full",
+      "relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 hover:ring-2 hover:ring-ring hover:ring-offset-2",
       className
     )}
     {...props}
@@ -20,11 +22,14 @@ Avatar.displayName = AvatarPrimitive.Root.displayName
 
 const AvatarImage = React.forwardRef<
   React.ElementRef<typeof AvatarPrimitive.Image>,
-  React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Image>
->(({ className, ...props }, ref) => (
+  React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Image> & {
+    profileType?: 'boy1' | 'boy2' | 'boy3' | 'girl1' | 'girl2' | 'girl3'
+  }
+>(({ className, profileType, ...props }, ref) => (
   <AvatarPrimitive.Image
     ref={ref}
-    className={cn("aspect-square h-full w-full", className)}
+    src={profileType ? `/Kais/profile ${profileType}.png` : props.src}
+    className={cn("aspect-square h-full w-full object-cover", className)}
     {...props}
   />
 ))

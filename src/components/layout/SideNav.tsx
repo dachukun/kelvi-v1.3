@@ -23,7 +23,7 @@ import {
   UserRound,
 } from "lucide-react";
 import { useMemo } from "react";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 type NavItem = {
   title: string;
@@ -59,6 +59,7 @@ const staticNavItems: NavItem[] = [
     subItems: [
       { title: "Calculator", path: "/tools/calculator", icon: Calculator },
       { title: "Todo List", path: "/tools/todo", icon: FileQuestion },
+      { title: "Pomodoro Timer", path: "/tools/pomodoro", icon: Brain },
     ]
   }
 ];
@@ -95,7 +96,7 @@ export function SideNav({ children }: { children: React.ReactNode }) {
           <SidebarContent>
             <SidebarGroup>
               <SidebarGroupLabel className="flex items-center gap-2">
-                <img src="/Kais/kailogo.png" alt="Kai Logo" className="h-12 w-auto" />
+                <img src="/Kais/kailogo.png" alt="Kai Logo" className="h-[2cm] w-[2cm] object-contain mb-4" />
                 <div className="text-xs bg-[#b2ec5d]/20 px-2 py-0.5 rounded-full">Beta</div>
               </SidebarGroupLabel>
               <SidebarGroupContent>
@@ -139,29 +140,42 @@ export function SideNav({ children }: { children: React.ReactNode }) {
             </SidebarGroup>
           </SidebarContent>
           
-          <Link to="/profile">
-            <div className="absolute bottom-0 left-0 right-0 mx-4 mb-4 p-2 border border-white/40 backdrop-blur-md bg-[#b2ec5d]/10 hover:bg-[#b2ec5d]/20 transition-all duration-300 cursor-pointer rounded-2xl shadow-xl">
-              <div className="flex items-center justify-between h-[1.5cm] p-2">
-                <div className="flex items-center gap-3">
-                  <Avatar className="h-10 w-10">
-                    <AvatarFallback className="bg-[#b2ec5d] text-black">
-                      {(user?.user_metadata?.display_name || user?.user_metadata?.full_name || 'U')[0].toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex flex-col">
-                    <span className="font-medium text-sm">{user?.user_metadata?.display_name || user?.user_metadata?.full_name || 'User'}</span>
-                    <span className="text-xs text-gray-500">{user?.user_metadata?.school_name || 'School'}</span>
+          {location.pathname !== '/profile' && (
+            <Link to="/profile">
+              <div className="absolute bottom-0 left-0 right-0 mx-4 mb-4 p-2 border border-white/40 backdrop-blur-md bg-[#b2ec5d]/10 hover:bg-[#b2ec5d]/20 transition-all duration-300 cursor-pointer rounded-2xl shadow-xl">
+                <div className="flex items-center justify-between h-[2cm] p-2">
+                  <div className="flex items-center gap-3">
+                    <Avatar 
+                      className="h-10 w-10" 
+                      style={{ 
+                        backgroundColor: user?.user_metadata?.avatar_bg || "#F2FCE2"
+                      }}
+                    >
+                      {user?.user_metadata?.avatar_url ? (
+                        <AvatarImage src={user.user_metadata.avatar_url} alt="Profile" />
+                      ) : (
+                        <AvatarFallback className="bg-[#b2ec5d] text-black">
+                          {(user?.user_metadata?.display_name || user?.user_metadata?.full_name || 'U')[0].toUpperCase()}
+                        </AvatarFallback>
+                      )}
+                    </Avatar>
+                    <div className="flex flex-col">
+                      <span className="font-medium text-sm">{user?.user_metadata?.display_name || user?.user_metadata?.full_name || 'User'}</span>
+                      <span className="text-xs text-gray-500">{user?.user_metadata?.school_name || 'School'}</span>
+                    </div>
                   </div>
+                  {location.pathname !== '/support' && (
+                    <Link 
+                      to="/support" 
+                      className="p-2 rounded-full hover:bg-[#b2ec5d]/20"
+                    >
+                      <HelpCircle size={20} className="text-gray-500" />
+                    </Link>
+                  )}
                 </div>
-                <Link 
-                  to="/support" 
-                  className="p-2 rounded-full hover:bg-[#b2ec5d]/20"
-                >
-                  <HelpCircle size={20} className="text-gray-500" />
-                </Link>
               </div>
-            </div>
-          </Link>
+            </Link>
+          )}
           
           <SidebarRail />
         </Sidebar>
