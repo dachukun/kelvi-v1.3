@@ -189,8 +189,13 @@ Format your response clearly with sections for Score, Strengths, Areas for Impro
           <CardWithHover title="Analysis Results" className="h-full">
             {analyzing ? (
               <div className="flex flex-col items-center justify-center py-12">
-                <Loader2 className="h-12 w-12 animate-spin mb-4 text-kelvi-green" />
-                <p>Analyzing your answer sheet...</p>
+                <div className="relative">
+                  <img src="/Kais/analyze.png" alt="Analyzing" className="w-32 h-32 object-contain opacity-50" />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="animate-spin h-12 w-12 border-4 border-kelvi-green border-t-transparent rounded-full"></div>
+                  </div>
+                </div>
+                <p className="mt-4">Analyzing your answer sheet...</p>
                 <p className="text-sm text-gray-500 mt-2">This may take a minute</p>
               </div>
             ) : result ? (

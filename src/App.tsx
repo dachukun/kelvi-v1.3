@@ -18,7 +18,6 @@ import Profile from "./pages/Profile";
 import Support from "./pages/Support";
 
 // Experiment pages
-import ExperimentsPage from "./pages/experiments/ExperimentsPage";
 import QuestionPaperGenerator from "./pages/experiments/QuestionPaperGenerator";
 import AnswerSheetAnalyzer from "./pages/experiments/AnswerSheetAnalyzer";
 import DoubtSolver from "./pages/experiments/DoubtSolver";
@@ -124,16 +123,6 @@ const AppRoutes = () => (
     />
     
     {/* Experiment routes */}
-    <Route 
-      path="/experiments" 
-      element={
-        <ProtectedRoute>
-          <SideNav>
-            <ExperimentsPage />
-          </SideNav>
-        </ProtectedRoute>
-      } 
-    />
     <Route 
       path="/experiments/question-paper" 
       element={

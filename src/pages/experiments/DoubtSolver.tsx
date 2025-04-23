@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { CardWithHover } from "@/components/ui/card-with-hover";
@@ -7,9 +6,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, Upload, Image } from "lucide-react";
+import { Loader2, Upload, Image, RefreshCw } from "lucide-react";
 import { callDeepSeekAPI } from "@/lib/deepseek";
 import { useToast } from "@/hooks/use-toast";
+import { MarkdownContent } from "@/components/ui/markdown-content";
 
 export default function DoubtSolver() {
   const [grade, setGrade] = useState("");
@@ -33,7 +33,32 @@ export default function DoubtSolver() {
     setResult(null);
 
     try {
-      const systemPrompt = `You are an expert CBSE teacher specializing in ${subject} for grade ${grade}. Provide clear, accurate explanations that are easy for students to understand. Use step-by-step approaches and include examples where applicable.`;
+      const systemPrompt = `You are an expert CBSE teacher specializing in ${subject} for grade ${grade}. 
+Provide clear, accurate explanations that are easy for students to understand. 
+Use step-by-step approaches and include examples where applicable.
+
+IMPORTANT FORMATTING INSTRUCTIONS:
+1. Use LaTeX for all mathematical expressions:
+   - Inline math should be wrapped in \\( and \\)
+   - Display math should be wrapped in \\[ and \\]
+   - Use proper LaTeX commands for fractions (\\frac{num}{den}), exponents (^), subscripts (_), etc.
+2. Use markdown for text formatting:
+   - **bold** for important terms
+   - *italic* for emphasis
+3. Number steps clearly and use proper spacing
+4. Format equations on separate lines using display math mode
+5. Use proper mathematical notation for:
+   - Fractions: \\frac{numerator}{denominator}
+   - Square roots: \\sqrt{x}
+   - Powers: x^{n}
+   - Subscripts: x_{i}
+   - Vectors: \\vec{v}
+   - Matrices: \\begin{matrix} a & b \\\\ c & d \\end{matrix}
+   - Greek letters: \\alpha, \\beta, etc.
+   - Trigonometric functions: \\sin, \\cos, \\tan
+   - Limits: \\lim_{x \\to a}
+   - Integrals: \\int_{a}^{b}
+   - Summations: \\sum_{i=1}^{n}`;
       
       const userPrompt = `I'm a grade ${grade} CBSE student and I need help with this ${subject} question:
 
@@ -128,7 +153,7 @@ Make sure your explanation is aligned with the CBSE curriculum for grade ${grade
                 <Button 
                   onClick={solveDoubt} 
                   disabled={solving}
-                  className="flex-1 bg-[#b2ec5d] hover:bg-[#b2ec5d]/90 text-black"
+                  className="w-full bg-[#b2ec5d] hover:bg-[#b2ec5d]/90 text-black"
                 >
                   {solving ? 
                     <>
@@ -145,24 +170,43 @@ Make sure your explanation is aligned with the CBSE curriculum for grade ${grade
         
         <div>
           <CardWithHover title="Solution" className="h-full">
-            {solving ? (
-              <div className="flex flex-col items-center justify-center py-12">
-                <Loader2 className="h-12 w-12 animate-spin mb-4 text-kelvi-blue" />
-                <p>Solving your doubt...</p>
-                <p className="text-sm text-gray-500 mt-2">This may take a minute</p>
-              </div>
-            ) : result ? (
-              <div className="prose max-w-full">
-                <pre className="whitespace-pre-wrap text-sm">{result}</pre>
-              </div>
-            ) : (
-              <div className="text-center py-12 text-gray-500">
-                <p>Your solution will appear here.</p>
-                <p className="text-sm mt-2">
-                  Fill out the form and click "Solve Doubt"
-                </p>
-              </div>
-            )}
+            <div className="relative">
+              {result && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="absolute right-0 top-0 z-10"
+                  onClick={() => {
+                    setResult(null);
+                    solveDoubt();
+                  }}
+                >
+                  <RefreshCw className="h-3 w-3" />
+                </Button>
+              )}
+              
+              {solving ? (
+                <div className="flex flex-col items-center justify-center py-12">
+                  <div className="relative">
+                    <img src="/Kais/doubt.png" alt="Solving Doubt" className="w-32 h-32 object-contain opacity-50" />
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="animate-spin h-12 w-12 border-4 border-kelvi-green border-t-transparent rounded-full"></div>
+                    </div>
+                  </div>
+                  <p className="mt-4">Solving your doubt...</p>
+                  <p className="text-sm text-gray-500 mt-2">This may take a minute</p>
+                </div>
+              ) : result ? (
+                <MarkdownContent content={result} />
+              ) : (
+                <div className="text-center py-12 text-gray-500">
+                  <p>Your solution will appear here.</p>
+                  <p className="text-sm mt-2">
+                    Fill out the form and click "Solve Doubt"
+                  </p>
+                </div>
+              )}
+            </div>
           </CardWithHover>
         </div>
       </div>

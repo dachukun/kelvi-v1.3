@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { CardWithHover } from "@/components/ui/card-with-hover";
@@ -223,7 +222,7 @@ The question paper should follow standard CBSE format and include quality questi
               <Button 
                 onClick={generateQuestionPaper} 
                 disabled={generating}
-                className="w-full gradient-green"
+                className="w-full bg-[#b2ec5d] hover:bg-[#b2ec5d]/90 text-black"
               >
                 {generating ? 
                   <>
@@ -241,8 +240,13 @@ The question paper should follow standard CBSE format and include quality questi
           <CardWithHover title="Generated Question Paper" className="h-full">
             {generating ? (
               <div className="flex flex-col items-center justify-center py-12">
-                <Loader2 className="h-12 w-12 animate-spin mb-4 text-kelvi-blue" />
-                <p>Generating your question paper...</p>
+                <div className="relative">
+                  <img src="/Kais/questionnp.png" alt="Question Paper" className="w-32 h-32 object-contain opacity-50" />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="animate-spin h-12 w-12 border-4 border-kelvi-green border-t-transparent rounded-full"></div>
+                  </div>
+                </div>
+                <p className="mt-4">Generating your question paper...</p>
                 <p className="text-sm text-gray-500 mt-2">This may take a minute</p>
               </div>
             ) : result ? (
