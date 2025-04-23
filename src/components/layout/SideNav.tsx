@@ -1,4 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
+import "@/styles/custom-scrollbar.css";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   Sidebar,
@@ -21,6 +22,8 @@ import {
   MessagesSquare,
   HelpCircle,
   UserRound,
+  ListTodo,
+  Timer,
 } from "lucide-react";
 import { useMemo } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -58,8 +61,8 @@ const staticNavItems: NavItem[] = [
     isStatic: true,
     subItems: [
       { title: "Calculator", path: "/tools/calculator", icon: Calculator },
-      { title: "Todo List", path: "/tools/todo", icon: FileQuestion },
-      { title: "Pomodoro Timer", path: "/tools/pomodoro", icon: Brain },
+      { title: "Todo List", path: "/tools/todo", icon: ListTodo },
+      { title: "Pomodoro Timer", path: "/tools/pomodoro", icon: Timer },
     ]
   }
 ];
@@ -93,14 +96,15 @@ export function SideNav({ children }: { children: React.ReactNode }) {
     <SidebarProvider>
       <div className="min-h-screen flex w-full">
         <Sidebar className="border-r">
-          <SidebarContent>
-            <SidebarGroup>
-              <SidebarGroupLabel className="flex items-center gap-2">
-                <img src="/Kais/kailogo.png" alt="Kai Logo" className="h-[2cm] w-[2cm] object-contain mb-4" />
-                <div className="text-xs bg-[#b2ec5d]/20 px-2 py-0.5 rounded-full">Beta</div>
+          <SidebarContent className="flex flex-col h-screen">
+            <SidebarGroup className="flex-shrink-0">
+              <SidebarGroupLabel className="flex items-center justify-center h-[3cm]">
+                <img src="/Kais/kailogo.png" alt="Kai Logo" className="h-[2.5cm] w-[2.5cm] object-contain" />
               </SidebarGroupLabel>
-              <SidebarGroupContent>
-                <SidebarMenu>
+            </SidebarGroup>
+            <SidebarGroup className="flex-1 overflow-y-auto custom-scrollbar">
+              <SidebarGroupContent className="mt-[-0.3cm] pt-[0.2cm]">
+                <SidebarMenu className="border-t-2 border-b-2 border-[#b2ec5d]/40 py-[0.2cm]">
                   {allNavItems.map((item) => (
                     <SidebarMenuItem key={item.path}>
                       <SidebarMenuButton
@@ -108,6 +112,7 @@ export function SideNav({ children }: { children: React.ReactNode }) {
                         isActive={location.pathname === item.path}
                         tooltip={item.title}
                         size="lg"
+                        className={item.title === "Experiments" || item.title === "Tools" ? "text-[#b2ec5d]" : ""}
                       >
                         <Link to={item.path}>
                           <item.icon size={24} />
@@ -140,9 +145,11 @@ export function SideNav({ children }: { children: React.ReactNode }) {
             </SidebarGroup>
           </SidebarContent>
           
-          {location.pathname !== '/profile' && (
-            <Link to="/profile">
-              <div className="absolute bottom-0 left-0 right-0 mx-4 mb-4 p-2 border border-white/40 backdrop-blur-md bg-[#b2ec5d]/10 hover:bg-[#b2ec5d]/20 transition-all duration-300 cursor-pointer rounded-2xl shadow-xl">
+          <SidebarGroup className="flex-shrink-0 mt-auto">
+            {location.pathname !== '/profile' && (
+              <Link to="/profile">
+                <div className="mx-4 mb-4 border-t-2 border-[#b2ec5d]/40 pt-[0.2cm]">
+                <div className="p-2 border border-white/40 backdrop-blur-md bg-[#b2ec5d]/10 hover:bg-[#b2ec5d]/20 transition-all duration-300 cursor-pointer rounded-2xl shadow-xl">
                 <div className="flex items-center justify-between h-[2cm] p-2">
                   <div className="flex items-center gap-3">
                     <Avatar 
@@ -174,8 +181,10 @@ export function SideNav({ children }: { children: React.ReactNode }) {
                   )}
                 </div>
               </div>
+              </div>
             </Link>
-          )}
+            )}
+          </SidebarGroup>
           
           <SidebarRail />
         </Sidebar>
