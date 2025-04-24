@@ -18,30 +18,69 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
-  const [streak, setStreak] = useState<number>(localStorage.getItem('quiz_streak') ? parseInt(localStorage.getItem('quiz_streak') || '0') : 0);
-
-  // Move demoQuestions to component scope so it's accessible by all functions
-  const demoQuestions = [
-    {
-      question: "What is the capital of India?",
-      options: ["Mumbai", "New Delhi", "Kolkata", "Chennai"],
-      correct_answer: "New Delhi"
-    },
-    {
-      question: "Which of the following is not a renewable source of energy?",
-      options: ["Solar Energy", "Wind Energy", "Nuclear Energy", "Tidal Energy"],
-      correct_answer: "Nuclear Energy"
-    },
-    {
-      question: "Who is known as the Father of the Indian Constitution?",
-      options: ["Mahatma Gandhi", "Jawaharlal Nehru", "Dr. B.R. Ambedkar", "Sardar Vallabhbhai Patel"],
-      correct_answer: "Dr. B.R. Ambedkar"
+  const [streak, setStreak] = useState<number>(() => {
+    const savedStreak = localStorage.getItem('quiz_streak');
+    const lastCorrectDate = localStorage.getItem('last_correct_date');
+    const today = new Date().toDateString();
+    
+    if (savedStreak && lastCorrectDate) {
+      const lastDate = new Date(lastCorrectDate).toDateString();
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      
+      // If last correct answer was yesterday, keep the streak
+      if (lastDate === yesterday.toDateString()) {
+        return parseInt(savedStreak);
+      }
+      // If last correct answer was today, keep the streak
+      if (lastDate === today) {
+        return parseInt(savedStreak);
+      }
     }
-  ];
+    return 0;
+  });
+  const [usedQuestions, setUsedQuestions] = useState<string[]>([]);
+  const [todayStats, setTodayStats] = useState(() => {
+    const savedStats = localStorage.getItem('today_stats');
+    const lastStatsDate = localStorage.getItem('last_stats_date');
+    const today = new Date().toDateString();
+    
+    if (savedStats && lastStatsDate && lastStatsDate === today) {
+      return JSON.parse(savedStats);
+    }
+    return { correct: 0, incorrect: 0 };
+  });
+
+  const fetchNewQuestion = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('https://opentdb.com/api.php?amount=1&type=multiple');
+      const data = await response.json();
+      
+      if (data.results && data.results.length > 0) {
+        const question = data.results[0];
+        const formattedQuestion = {
+          question: question.question,
+          options: [...question.incorrect_answers, question.correct_answer].sort(() => Math.random() - 0.5),
+          correct_answer: question.correct_answer
+        };
+
+        if (!usedQuestions.includes(question.question)) {
+          setQuizQuestion(formattedQuestion);
+          setUsedQuestions(prev => [...prev, question.question]);
+          setLoading(false);
+        } else {
+          fetchNewQuestion();
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching question:', error);
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    setQuizQuestion(demoQuestions[Math.floor(Math.random() * demoQuestions.length)]);
-    setLoading(false);
+    fetchNewQuestion();
   }, []);
 
   const handleOptionSelect = (option: string) => {
@@ -50,22 +89,44 @@ export default function Dashboard() {
       const correct = option === quizQuestion.correct_answer;
       setIsCorrect(correct);
       
+      // Update today's stats
+      const today = new Date().toDateString();
+      const lastStatsDate = localStorage.getItem('last_stats_date');
+      
+      if (!lastStatsDate || lastStatsDate !== today) {
+        // Reset stats for new day
+        setTodayStats({ correct: 0, incorrect: 0 });
+        localStorage.setItem('last_stats_date', today);
+      }
+      
+      const newStats = {
+        correct: correct ? todayStats.correct + 1 : todayStats.correct,
+        incorrect: !correct ? todayStats.incorrect + 1 : todayStats.incorrect
+      };
+      
+      setTodayStats(newStats);
+      localStorage.setItem('today_stats', JSON.stringify(newStats));
+      
       if (correct) {
-        const newStreak = streak + 1;
-        setStreak(newStreak);
-        localStorage.setItem('quiz_streak', newStreak.toString());
+        const lastCorrectDate = localStorage.getItem('last_correct_date');
+        if (!lastCorrectDate || lastCorrectDate !== today) {
+          const newStreak = streak + 1;
+          setStreak(newStreak);
+          localStorage.setItem('quiz_streak', newStreak.toString());
+          localStorage.setItem('last_correct_date', new Date().toISOString());
+        }
       } else {
         setStreak(0);
         localStorage.setItem('quiz_streak', '0');
+        localStorage.removeItem('last_correct_date');
       }
     }
   };
 
   const startQuiz = () => {
-    setQuizQuestion(demoQuestions[Math.floor(Math.random() * demoQuestions.length)]);
     setSelectedOption(null);
     setIsCorrect(null);
-    setLoading(false);
+    fetchNewQuestion();
   };
 
   const toolboxItems = [
@@ -186,7 +247,7 @@ export default function Dashboard() {
                     onClick={startQuiz} 
                     className="w-full bg-[#b2ec5d] hover:bg-[#b2ec5d]/90 text-black"
                   >
-                    Start Quiz
+                    Next Question
                   </Button>
                 </div>
               </div>
@@ -204,6 +265,21 @@ export default function Dashboard() {
             className="bg-[#b2ec5d]/10"
           >
             <div className="flex flex-col items-center py-4">
+              {/* Today's Stats */}
+              <div className="w-full mb-6">
+                <div className="text-sm font-semibold text-gray-700 mb-2">Today's Progress</div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-green-100 rounded-lg p-3 text-center">
+                    <div className="text-2xl font-bold text-green-700">{todayStats.correct}</div>
+                    <div className="text-xs text-green-600">Correct Answers</div>
+                  </div>
+                  <div className="bg-red-100 rounded-lg p-3 text-center">
+                    <div className="text-2xl font-bold text-red-700">{todayStats.incorrect}</div>
+                    <div className="text-xs text-red-600">Incorrect Answers</div>
+                  </div>
+                </div>
+              </div>
+
               <div className="relative">
                 <img src="/Kais/streak.png" alt="Streak" className="w-32 h-32 object-contain" />
                 <div className="absolute top-0 left-0 bg-white/80 rounded-full px-2 py-1 text-2xl font-bold">

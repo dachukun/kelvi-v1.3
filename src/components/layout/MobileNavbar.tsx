@@ -1,5 +1,5 @@
 import { useLocation, Link } from "react-router-dom";
-import { Home, ClipboardCheck, User, HelpCircle, ChevronUp, Beaker, Wrench, Clock, Calculator, CheckSquare } from "lucide-react";
+import { Home, FileText, User, HelpCircle, Brain, Search, BrainCircuit, Clock, Calculator, CheckSquare } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 
@@ -34,7 +34,7 @@ export function MobileNavbar() {
                   isActive("/experiments/doubt-solver") ? "bg-kelvi-blue/10 text-kelvi-blue" : "hover:bg-gray-100"
                 }`}
               >
-                <Beaker size={20} />
+                <Brain size={20} />
                 <span>Doubt Solver</span>
               </Link>
               <Link
@@ -43,7 +43,7 @@ export function MobileNavbar() {
                   isActive("/experiments/question-paper") ? "bg-kelvi-blue/10 text-kelvi-blue" : "hover:bg-gray-100"
                 }`}
               >
-                <ClipboardCheck size={20} />
+                <FileText size={20} />
                 <span>Question Paper</span>
               </Link>
               <Link
@@ -52,7 +52,7 @@ export function MobileNavbar() {
                   isActive("/experiments/answer-analyzer") ? "bg-kelvi-blue/10 text-kelvi-blue" : "hover:bg-gray-100"
                 }`}
               >
-                <Wrench size={20} />
+                <Search size={20} />
                 <span>Answer Analyzer</span>
               </Link>
             </div>
@@ -113,7 +113,7 @@ export function MobileNavbar() {
           }`}
           onClick={() => setIsMenuOpen(!isMenuOpen)}
         >
-          <ChevronUp
+          <BrainCircuit
             size={20}
             className={`transform transition-transform duration-300 ${isMenuOpen ? 'rotate-180' : ''}`}
           />
